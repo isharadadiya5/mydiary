@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyDiary — Your Private Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #D6336C;
+  --primary-hover: #b82556;
+  --primary-light: #fdf0f4;
+  --primary-gradient: linear-gradient(135deg, #D6336C 0%, #E64C7E 100%);
+  --hero-gradient: linear-gradient(135deg, #D6336C 0%, #E64C7E 50%, #B82556 100%);
+  --bg: #FAF7F8;
+  --card: #FFFFFF;
+  --text: #2A2328;
+  --muted: #7C7077;
+  --line: #F3E6EB;
+  --shadow: 0 16px 40px rgba(214, 51, 108, 0.08), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-hover: 0 20px 48px rgba(214, 51, 108, 0.16), 0 6px 16px rgba(0,0,0,0.06);
+  --radius: 20px;
+}
+
+[data-theme="dark"] {
+  --primary: #D6336C;
+  --primary-hover: #e64c7e;
+  --primary-light: #381422;
+  --primary-gradient: linear-gradient(135deg, #D6336C 0%, #C2265B 100%);
+  --hero-gradient: linear-gradient(135deg, #2A0D17 0%, #3D1222 100%);
+  --bg: #140F12;
+  --card: #1E171C;
+  --text: #FCEEF2;
+  --muted: #A3939C;
+  --line: #2E232A;
+  --shadow: 0 16px 40px rgba(0,0,0,0.4);
+  --shadow-hover: 0 20px 48px rgba(214, 51, 108, 0.2);
+}
+
+[data-theme="warm"] {
+  --bg: #FDF9F3;
+  --card: #FFFDF9;
+  --line: #F2E8DA;
+  --text: #362E2B;
+  --muted: #857873;
+}
+
+* { box-sizing: border-box; transition: background-color 0.25s ease, border-color 0.25s ease; }
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .brand, .btn {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Ambient glow */
+.ambient-glow {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214,51,108,0.12) 0%, rgba(214,51,108,0) 70%);
+  top: -150px;
+  right: -100px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; border: 0; outline: none; }
+
+.app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* Sidebar Navigation */
+.sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--line);
+  padding: 28px 18px;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+[data-theme="dark"] .sidebar { background: rgba(30, 23, 28, 0.88); }
+
+.brand {
+  font-size: 28px;
+  font-weight: 800;
+  padding: 0 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.brand span { color: var(--primary); }
+.brand-sparkle { color: var(--primary); animation: pulse 2s infinite ease-in-out; }
+
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.85; } }
+
+.nav { flex: 1; overflow-y: auto; }
+.nav button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  margin: 6px 0;
+  background: transparent;
+  border-radius: 14px;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+.nav button:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  transform: translateX(3px);
+}
+.nav button.active {
+  background: var(--primary-gradient);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(255, 120, 141, 0.35);
+}
+
+.bottom-nav { padding-top: 16px; border-top: 1px solid var(--line); }
+
+/* Main Area */
+.main {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  padding: 36px 40px;
+  max-width: 1400px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.hello h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; }
+.hello p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+
+.actions { display: flex; align-items: center; gap: 12px; }
+
+/* Buttons */
+.btn {
+  padding: 11px 18px;
+  border-radius: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.btn.primary {
+  background: var(--primary-gradient);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 22px rgba(255, 120, 141, 0.35);
+}
+.btn.primary:hover {
+  box-shadow: 0 12px 28px rgba(255, 120, 141, 0.45);
+  transform: translateY(-2px);
+}
+.btn.danger {
+  background: #FFF0F0;
+  color: #E54848;
+  border: 1px solid #FFD0D0;
+}
+.btn.icon-only { padding: 11px; border-radius: 12px; }
+
+.user-pill {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Cards & Layout Grid */
+.grid { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 24px; margin-bottom: 24px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+/* Hero Card */
+.hero {
+  background: var(--hero-gradient);
+  color: white;
+  min-height: 250px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hero:after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  right: -80px;
+  top: -80px;
+  pointer-events: none;
+}
+.hero h2 { font-size: 32px; font-weight: 800; max-width: 550px; margin: 8px 0 10px; line-height: 1.25; }
+.hero p { max-width: 520px; opacity: 0.92; font-size: 15px; margin: 0; line-height: 1.5; }
+.writebox {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 16px 20px;
+  color: #776A72;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.writebox:hover { background: #FFFFFF; transform: scale(1.01); color: var(--text); }
+[data-theme="dark"] .writebox { background: rgba(30, 23, 28, 0.9); color: #C5B8C0; }
+
+.memory-card {
+  background: linear-gradient(135deg, rgba(255, 120, 141, 0.08) 0%, rgba(255, 180, 190, 0.05) 100%);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+.stat { text-align: left; }
+.stat strong { display: block; font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.stat span { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+.sectionhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.sectionhead h3 { margin: 0; font-size: 20px; font-weight: 700; }
+
+/* Entry Cards */
+.entry-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  margin-bottom: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.entry-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(255, 120, 141, 0.3);
+}
+.entry-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.entry-card h4 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text); }
+.entry-card p { margin: 8px 0 12px; color: var(--muted); font-size: 14px; line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+.entry-img-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.meta { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.mood-badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.tag-chip {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.tag-chip:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Calendar Widget */
+.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.cal-day-name { text-align: center; font-size: 13px; font-weight: 700; color: var(--muted); padding: 8px 0; }
+.cal-day {
+  min-height: 48px;
+  padding: 8px;
+  border-radius: 12px;
+  text-align: center;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+.cal-day:hover { border-color: var(--primary); color: var(--primary); }
+.cal-day.has-entry {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+}
+.cal-day.today {
+  border: 2px solid var(--primary);
+}
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+
+/* Pages */
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Modals */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 12, 15, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+.modal.open { display: flex; }
+.modalbox {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  width: min(720px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--bg);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.close-btn:hover { background: var(--primary-light); color: var(--primary); }
+
+.modalbox label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; color: var(--text); }
+.modalbox input, .modalbox textarea, .modalbox select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+.modalbox input:focus, .modalbox textarea:focus, .modalbox select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+.modalbox textarea { min-height: 220px; resize: vertical; line-height: 1.6; }
+
+.form-row { display: flex; gap: 14px; }
+.form-row > * { flex: 1; }
+
+.image-preview-container {
+  margin-top: 10px;
+  position: relative;
+  display: inline-block;
+}
+.image-preview-container img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+.remove-img-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Feature grid */
+.featuregrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.feature {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  transition: all 0.2s ease;
+}
+.feature:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: rgba(255,120,141,0.3); }
+.feature b { display: block; font-size: 17px; margin: 10px 0 4px; color: var(--text); }
+.feature .icon { font-size: 28px; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--text);
+  color: var(--bg);
+  padding: 14px 22px;
+  border-radius: 14px;
+  display: none;
+  z-index: 120;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  font-weight: 600;
+  animation: fadeIn 0.3s ease;
+}
+.toast.show { display: block; }
+
+/* PIN Lock Screen */
+.lock {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 15, 18, 0.96);
+  color: white;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  backdrop-filter: blur(20px);
+}
+.lock.show { display: flex; }
+.lockbox { width: min(400px, 90%); }
+.lock input {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  text-align: center;
+  font-size: 28px;
+  letter-spacing: 8px;
+  width: 200px;
+  margin: 16px 0;
+}
+
+/* Canvas Confetti Layer */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Auth Tabs */
+.auth-tabs { display: flex; border-bottom: 2px solid var(--line); margin-bottom: 20px; }
+.auth-tab { flex: 1; padding: 12px; text-align: center; font-weight: 700; cursor: pointer; color: var(--muted); }
+.auth-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+/* Media Queries */
+@media (max-width: 900px) {
+  .sidebar { width: 70px; padding: 20px 10px; }
+  .brand span, .brand-text { display: none; }
+  .nav button span { display: none; }
+  .nav button { justify-content: center; padding: 12px; }
+  .main { margin-left: 70px; width: calc(100% - 70px); padding: 20px; }
+  .grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+<div class="ambient-glow"></div>
+
+<!-- PIN Lock Overlay -->
+<div class="lock" id="lock">
+  <div class="lockbox">
+    <div style="font-size:56px; margin-bottom:10px">🔐</div>
+    <h2>MyDiary is Locked</h2>
+    <p style="color:#A3939C">Enter your 4-digit PIN to open your diary.</p>
+    <input id="pinInput" type="password" maxlength="4" placeholder="••••"><br>
+    <button class="btn primary" style="width:180px; margin-top:10px" onclick="unlock()">Unlock</button>
+  </div>
+</div>
+
+<div class="app">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-sparkle">✦</span> <span class="brand-text">my<span>diary</span></span>
+    </div>
+    <nav class="nav">
+      <button class="active" data-page="home"><span>🏠</span> <span class="brand-text">Home</span></button>
+      <button data-page="write"><span>✍️</span> <span class="brand-text">Write</span></button>
+      <button data-page="calendar"><span>📅</span> <span class="brand-text">Calendar</span></button>
+      <button data-page="search"><span>🔍</span> <span class="brand-text">Search</span></button>
+      <button data-page="insights"><span>🧠</span> <span class="brand-text">Insights</span></button>
+      <button data-page="future"><span>💌</span> <span class="brand-text">Future Me</span></button>
+      <button data-page="memories"><span>🕰️</span> <span class="brand-text">Memories</span></button>
+      <button data-page="goals"><span>🎯</span> <span class="brand-text">Goals</span></button>
+      <button data-page="settings"><span>⚙️</span> <span class="brand-text">Settings</span></button>
+    </nav>
+    <div class="bottom-nav">
+      <button class="btn" style="width:100%" onclick="lockDiary()">🔒 <span class="brand-text">Lock Diary</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main">
+    <!-- Top Header -->
+    <div class="top-bar">
+      <div class="hello">
+        <h1 id="greetingText">Good day ✨</h1>
+        <p>Your private space to reflect, capture moments, and grow.</p>
+      </div>
+      <div class="actions">
+        <div id="userProfileArea">
+          <button class="btn primary" onclick="openModal('authModal')">🔑 Sign In / Register</button>
+        </div>
+        <button class="btn icon-only" onclick="toggleTheme()" title="Toggle Dark/Light Mode" id="themeBtn">🌙</button>
+        <button class="btn" onclick="randomMemory()">🎲 Surprise me</button>
+        <button class="btn primary" onclick="openEditor()">+ Write Today</button>
+      </div>
+    </div>
+
+    <!-- Page: HOME -->
+    <section id="home" class="page active">
+      <div class="grid">
+        <div class="card hero">
+          <div>
+            <div style="font-size:13px; font-weight:700; letter-spacing:1px; opacity:0.9; text-transform:uppercase" id="todayDateStr">TODAY</div>
+            <h2>How was your day?</h2>
+            <p>Write your thoughts, victories, quiet feelings, or secrets. Everything stays safe right here.</p>
+          </div>
+          <div class="writebox" onclick="openEditor()">
+            <span>✍️</span> <span>Click here to start today's entry...</span>
+          </div>
+        </div>
+
+        <div class="card memory-card">
+          <div>
+            <div class="sectionhead">
+              <h3>🕰️ Daily Inspiration</h3>
+            </div>
+            <p id="affirmationText" style="font-size:16px; font-style:italic; line-height:1.6; color:var(--text)">
+              "Every day is a fresh blank page in the book of your life."
+            </p>
+          </div>
+          <button class="btn" style="margin-top:16px; width:100%" onclick="nextAffirmation()">✨ New Inspiration</button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Row -->
+      <div class="stats">
+        <div class="card stat"><strong id="entryCount">0</strong><span>Journal Entries</span></div>
+        <div class="card stat"><strong id="streakCount">0 🔥</strong><span>Day Streak</span></div>
+        <div class="card stat"><strong id="wordCount">0</strong><span>Words Written</span></div>
+        <div class="card stat"><strong id="topMood">😊</strong><span>Most Common Mood</span></div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="sectionhead">
+            <h3>Recent Entries</h3>
+            <button class="btn" onclick="go('search')">View All</button>
+          </div>
+          <div id="recentEntriesList"></div>
+        </div>
+
+        <div class="card">
+          <div class="sectionhead">
+            <h3>Quick Reflection</h3>
+          </div>
+          <p style="font-size:14px; color:var(--muted); margin-top:0">What made you smile or feel grateful today?</p>
+          <textarea id="quickInput" placeholder="Write one small happy moment..." style="width:100%; min-height:110px; border:1px solid var(--line); border-radius:14px; padding:14px; background:var(--bg); color:var(--text)"></textarea>
+          <button class="btn primary" style="margin-top:12px; width:100%" onclick="saveQuick()">Save Reflection ✨</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page: WRITE -->
+    <section id="write" class="page">
+      <div class="sectionhead">
+        <h2>Journal Entries ✍️</h2>
+        <button class="btn primary" onclick="openEditor()">+ New Diary Entry</button>
+      </div>
+      <div id="allEntriesList"></div>
+    </section>
+
+    <!-- Page: CALENDAR -->
+    <section id="calendar" class="page">
+      <div class="card">
+        <div class="calendar-header">
+          <button class="btn" onclick="changeMonth(-1)">‹ Prev</button>
+          <h3 id="calMonthTitle" style="margin:0">Month Year</h3>
+          <button class="btn" onclick="changeMonth(1)">Next ›</button>
+        </div>
+        <div class="calendar-grid" id="calDaysGrid"></div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h3 id="calSelectedDateTitle">Entries on selected date</h3>
+        <div id="calEntriesList"></div>
+      </div>
+    </section>
+
+    <!-- Page: SEARCH -->
+    <section id="search" class="page">
+      <div class="card" style="margin-bottom:20px">
+        <div class="sectionhead">
+          <h3>Search Memories 🔍</h3>
+        </div>
+        <input id="searchInput" oninput="renderSearch()" placeholder="Search by keyword, tag (e.g. #happy), or mood..." style="width:100%; padding:16px; border:1px solid var(--line); border-radius:14px; background:var(--bg); color:var(--text)">
+      </div>
+      <div id="searchResults"></div>
+    </section>
+
+    <!-- Page: INSIGHTS -->
+    <section id="insights" class="page">
+      <div class="sectionhead">
+        <h2>My Insights 🧠</h2>
+      </div>
+      <div class="featuregrid">
+        <div class="feature">
+          <div class="icon">📈</div>
+          <b>Writing Rhythm</b>
+          <span style="font-size:14px; color:var(--muted)" id="insightRhythm">You're building a healthy writing routine!</span>
+        </div>
+        <div class="feature">
+          <div class="icon">😊</div>
+          <b>Mood Summary</b>
+          <span style="font-size:14px; color:var(--muted)" id="insightMood">Happy & relaxed are your top emotions.</span>
+        </div>
+        <div class="feature">
+          <div class="icon">🌱</div>
+          <b>Personal Growth</b>
+          <span style="font-size:14px; color:var(--muted)" id="insightGrowth">Keep writing down your reflections and goals.</span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h3>✨ AI Reflection</h3>
+        <p id="aiText" style="font-size:15px; line-height:1.6; color:var(--text)">
+          Your entries reflect a thoughtful journey filled with small victories and meaningful memories. Taking time to write helps clarify your mind.
+        </p>
+        <button class="btn primary" onclick="generateAIReflection()">✨ Refresh AI Reflection</button>
+      </div>
+    </section>
+
+    <!-- Page: FUTURE -->
+    <section id="future" class="page">
+      <div class="sectionhead">
+        <h2>Future Me Letters 💌</h2>
+        <button class="btn primary" onclick="openFutureModal()">+ Write a Letter</button>
+      </div>
+      <div class="card">
+        <div id="lettersList"></div>
+      </div>
+    </section>
+
+    <!-- Page: MEMORIES -->
+    <section id="memories" class="page">
+      <div class="sectionhead">
+        <h2>Memory Vault 🕰️</h2>
+      </div>
+      <div class="featuregrid">
+        <div class="feature">
+          <div class="icon">📸</div>
+          <b>Photo Memories</b>
+          <span style="font-size:13px; color:var(--muted)">Attach photos to diary entries to visually remember moments.</span>
+        </div>
+        <div class="feature">
+          <div class="icon">🎤</div>
+          <b>Voice Notes</b>
+          <span style="font-size:13px; color:var(--muted)">Record voice thoughts straight into your journal body.</span>
+        </div>
+        <div class="feature">
+          <div class="icon">🔒</div>
+          <b>AES-256 Encrypted</b>
+          <span style="font-size:13px; color:var(--muted)">Your journal entries are encrypted on the backend database.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page: GOALS -->
+    <section id="goals" class="page">
+      <div class="sectionhead">
+        <h2>Goals & Dreams 🎯</h2>
+        <button class="btn primary" onclick="addGoal()">+ Add Goal</button>
+      </div>
+      <div class="card">
+        <div id="goalsList"></div>
+      </div>
+    </section>
+
+    <!-- Page: SETTINGS -->
+    <section id="settings" class="page">
+      <div class="sectionhead">
+        <h2>Settings & Personalization ⚙️</h2>
+      </div>
+      <div class="card">
+        <h3>Appearance</h3>
+        <div class="form-row" style="margin-bottom:20px">
+          <div>
+            <label>Color Theme</label>
+            <select id="themeSelect" onchange="applyTheme(this.value)">
+              <option value="light">Soft Rose Light</option>
+              <option value="dark">Midnight Dark</option>
+              <option value="warm">Warm Paper</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Privacy & Security</h3>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px">
+          <button class="btn" onclick="setPin()">🔐 Set / Change PIN</button>
+          <button class="btn" onclick="exportData()">⬇️ Export Backup (JSON)</button>
+          <button class="btn" onclick="document.getElementById('importFileInput').click()">⬆️ Import Backup</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
+          <button class="btn danger" onclick="clearData()">🗑️ Delete Local Browser Data</button>
+        </div>
+
+        <p style="font-size:13px; color:var(--muted)">
+          🔒 Backend Protection: Passwords are hashed with bcrypt (10 rounds) and entry data is encrypted with AES-256 in SQLite.
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- USER AUTH MODAL (Login / Register) -->
+<div class="modal" id="authModal">
+  <div class="modalbox" style="max-width:440px">
+    <button class="close-btn" onclick="closeModal('authModal')">×</button>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</div>
+      <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Create Account</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="formLogin">
+      <label>Username or Email</label>
+      <input id="loginIdentifier" placeholder="Enter username or email">
+      <label>Password</label>
+      <input id="loginPassword" type="password" placeholder="••••••••">
+      <button class="btn primary" style="width:100%; margin-top:20px" onclick="handleLogin()">Sign In 🔑</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="formRegister" style="display:none">
+      <label>Username</label>
+      <input id="regUsername" placeholder="Choose a unique username">
+      <label>Email Address</label>
+      <input id="regEmail" type="email" placeholder="name@example.com">
+      <label>Password</label>
+      <input id="regPassword" type="password" placeholder="At least 6 characters">
+      <button class="btn primary" style="width:100%; margin-top:20px" onclick="handleRegister()">Create Secure Account ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR MODAL (New & Edit Entry) -->
+<div class="modal" id="editorModal">
+  <div class="modalbox">
+    <button class="close-btn" onclick="closeModal('editorModal')">×</button>
+    <h2 id="editorModalTitle">Write Entry ✍️</h2>
+    <input type="hidden" id="editEntryId">
+    
+    <label>Title</label>
+    <input id="entryTitle" placeholder="Give this day a name...">
+
+    <div class="form-row">
+      <div>
+        <label>Mood</label>
+        <select id="entryMood">
+          <option>😊 Happy</option>
+          <option>💖 Loved</option>
+          <option>🙂 Good</option>
+          <option>😌 Peaceful</option>
+          <option>😐 Okay</option>
+          <option>😔 Sad</option>
+          <option>😰 Anxious</option>
+          <option>😴 Tired</option>
+        </select>
+      </div>
+      <div>
+        <label>Tags</label>
+        <input id="entryTags" placeholder="#life, #work, #gratitude">
+      </div>
+    </div>
+
+    <label>Photo Attachment</label>
+    <input type="file" id="entryPhotoInput" accept="image/*" onchange="handlePhotoUpload(event)">
+    <div id="imagePreviewContainer" class="image-preview-container" style="display:none">
+      <img id="imagePreview" src="" alt="Preview">
+      <button class="remove-img-btn" onclick="removePhoto()">×</button>
+    </div>
+
+    <label>Your Thoughts</label>
+    <textarea id="entryBody" placeholder="Write freely. What happened today? How do you feel?"></textarea>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px">
+      <div style="display:flex; gap:8px">
+        <button class="btn" onclick="triggerVoice()">🎤 Voice Input</button>
+        <button class="btn" onclick="insertWritingPrompt()">✨ Prompt</button>
+      </div>
+      <button class="btn primary" onclick="saveEntry()">Save Entry ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENTRY DETAIL VIEW MODAL -->
+<div class="modal" id="viewModal">
+  <div class="modalbox">
+    <button class="close-btn" onclick="closeModal('viewModal')">×</button>
+    <div id="viewModalContent"></div>
+  </div>
+</div>
+
+<!-- FUTURE LETTER MODAL -->
+<div class="modal" id="futureModal">
+  <div class="modalbox">
+    <button class="close-btn" onclick="closeModal('futureModal')">×</button>
+    <h2>💌 Letter to Future Me</h2>
+    <textarea id="letterBody" placeholder="What do you want your future self to remember?"></textarea>
+    <label>Open On Date</label>
+    <input id="letterDate" type="date">
+    <button class="btn primary" style="margin-top:16px; width:100%" onclick="saveLetter()">Seal Letter 💌</button>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast"></div>
+
+<script>
+// Key Constants
+const KEY = 'mydiary_entries_v1', LKEY = 'mydiary_letters_v1', GKEY = 'mydiary_goals_v1', PIN = 'mydiary_pin_v1', THEME_KEY = 'mydiary_theme_v1';
+const TOKEN_KEY = 'mydiary_token_v1', USER_KEY = 'mydiary_user_v1';
+
+// State
+let authToken = localStorage.getItem(TOKEN_KEY) || null;
+let currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+let entries = JSON.parse(localStorage.getItem(KEY) || '[]');
+let letters = JSON.parse(localStorage.getItem(LKEY) || '[]');
+let goals = JSON.parse(localStorage.getItem(GKEY) || '[]');
+let currentPhotoBase64 = '';
+let currentCalDate = new Date();
+
+// Inspirations list
+const affirmations = [
+  '"Every day is a fresh blank page in the book of your life."',
+  '"Happiness is not something readymade. It comes from your own actions."',
+  '"Turn your obstacles into steps toward your goals."',
+  '"Be present in this quiet moment. Tomorrow will take care of itself."',
+  '"Small daily reflections create deep long-term growth."'
+];
+let currentAffIndex = 0;
+
+// API Helper
+async function apiFetch(endpoint, options = {}) {
+  options.headers = options.headers || {};
+  if (authToken) {
+    options.headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  if (options.body && typeof options.body === 'object') {
+    options.headers['Content-Type'] = 'application/json';
+    options.body = JSON.stringify(options.body);
+  }
+
+  try {
+    const res = await fetch(endpoint, options);
+    const data = await res.json();
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        // Token invalid/expired
+        if (authToken) handleLogout(false);
+      }
+      throw new Error(data.error || 'Server request failed');
+    }
+    return data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+// Initial Sync from Backend if authenticated
+async function syncFromBackend() {
+  if (!authToken) {
+    renderUserProfile();
+    return;
+  }
+  try {
+    const meData = await apiFetch('/api/auth/me');
+    currentUser = meData.user;
+    localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+
+    const entriesData = await apiFetch('/api/entries');
+    entries = entriesData.entries;
+    localStorage.setItem(KEY, JSON.stringify(entries));
+
+    const lettersData = await apiFetch('/api/letters');
+    letters = lettersData.letters;
+    localStorage.setItem(LKEY, JSON.stringify(letters));
+
+    const goalsData = await apiFetch('/api/goals');
+    goals = goalsData.goals;
+    localStorage.setItem(GKEY, JSON.stringify(goals));
+
+    refreshUI();
+  } catch (err) {
+    console.warn('Backend sync failed, using cached local data:', err.message);
+  }
+  renderUserProfile();
+}
+
+// User Profile Top Header Render
+function renderUserProfile() {
+  const container = document.getElementById('userProfileArea');
+  if (authToken && currentUser) {
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px">
+        <span class="user-pill">👤 ${esc(currentUser.username)}</span>
+        <button class="btn" onclick="handleLogout(true)" title="Sign Out">Sign Out</button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `<button class="btn primary" onclick="openModal('authModal')">🔑 Sign In / Register</button>`;
+  }
+}
+
+// Auth Handlers
+function switchAuthTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+async function handleLogin() {
+  const identifier = document.getElementById('loginIdentifier').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!identifier || !password) return showToast('Please enter your credentials');
+
+  try {
+    const data = await apiFetch('/api/auth/login', {
+      method: 'POST',
+      body: { identifier, password }
+    });
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem(TOKEN_KEY, authToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+    closeModal('authModal');
+    showToast(`Welcome back, ${currentUser.username}! ✨`);
+    await syncFromBackend();
+  } catch (err) {
+    showToast(err.message);
+  }
+}
+
+async function handleRegister() {
+  const username = document.getElementById('regUsername').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+
+  if (!username || !email || !password) return showToast('Please fill out all fields');
+
+  try {
+    const data = await apiFetch('/api/auth/register', {
+      method: 'POST',
+      body: { username, email, password }
+    });
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem(TOKEN_KEY, authToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+    closeModal('authModal');
+    showToast(`Account created! Welcome ${currentUser.username} ✨`);
+    await syncFromBackend();
+  } catch (err) {
+    showToast(err.message);
+  }
+}
+
+function handleLogout(showNotification = true) {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  renderUserProfile();
+  if (showNotification) showToast('Logged out safely');
+}
+
+// Default Demo Data if empty and offline
+if (!entries.length && !authToken) {
+  entries = [
+    { id: 1, date: new Date().toISOString().slice(0, 10), title: 'A Fresh Beginning ✨', mood: '😊 Happy', tags: '#new #diary', body: 'Today marks the start of keeping a beautiful private space for my thoughts. Excited to capture daily moments!', photo: '' },
+    { id: 2, date: new Date(Date.now() - 86400000).toISOString().slice(0, 10), title: 'Evening Reflections 🌇', mood: '😌 Peaceful', tags: '#thoughts #gratitude', body: 'Took a walk in the evening and noticed how calm everything felt. Simple days like this are true treasures.', photo: '' }
+  ];
+  saveAllLocal();
+}
+
+// Save to LocalStorage
+function saveAllLocal() {
+  localStorage.setItem(KEY, JSON.stringify(entries));
+  localStorage.setItem(LKEY, JSON.stringify(letters));
+  localStorage.setItem(GKEY, JSON.stringify(goals));
+}
+
+// Navigation Handler
+function go(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(pageId);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === pageId);
+  });
+
+  if (pageId === 'calendar') renderCalendar();
+  if (pageId === 'search') renderSearch();
+  if (pageId === 'future') renderLetters();
+  if (pageId === 'goals') renderGoals();
+  if (pageId === 'write') renderAllEntries();
+}
+
+document.querySelectorAll('.nav button').forEach(btn => {
+  btn.onclick = () => go(btn.dataset.page);
+});
+
+// Modals
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openEditor(editId = null) {
+  document.getElementById('editEntryId').value = editId || '';
+  if (editId) {
+    const item = entries.find(e => e.id == editId);
+    if (item) {
+      document.getElementById('editorModalTitle').textContent = 'Edit Entry ✍️';
+      document.getElementById('entryTitle').value = item.title;
+      document.getElementById('entryMood').value = item.mood;
+      document.getElementById('entryTags').value = item.tags || '';
+      document.getElementById('entryBody').value = item.body;
+      currentPhotoBase64 = item.photo || '';
+    }
+  } else {
+    document.getElementById('editorModalTitle').textContent = 'Write Today ✍️';
+    document.getElementById('entryTitle').value = '';
+    document.getElementById('entryTags').value = '';
+    document.getElementById('entryBody').value = '';
+    currentPhotoBase64 = '';
+  }
+  updatePhotoPreview();
+  openModal('editorModal');
+}
+
+// Photo Handling
+function handlePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    currentPhotoBase64 = evt.target.result;
+    updatePhotoPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function updatePhotoPreview() {
+  const container = document.getElementById('imagePreviewContainer');
+  const img = document.getElementById('imagePreview');
+  if (currentPhotoBase64) {
+    img.src = currentPhotoBase64;
+    container.style.display = 'inline-block';
+  } else {
+    img.src = '';
+    container.style.display = 'none';
+  }
+}
+
+function removePhoto() {
+  currentPhotoBase64 = '';
+  document.getElementById('entryPhotoInput').value = '';
+  updatePhotoPreview();
+}
+
+// Save Entry
+async function saveEntry() {
+  const title = document.getElementById('entryTitle').value.trim() || 'Untitled Day';
+  const body = document.getElementById('entryBody').value.trim();
+  const editId = document.getElementById('editEntryId').value;
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const moodStr = document.getElementById('entryMood').value;
+  const tagsStr = document.getElementById('entryTags').value;
+
+  if (!body) {
+    showToast('Please write your thoughts first ✍️');
+    return;
+  }
+
+  if (authToken) {
+    try {
+      if (editId) {
+        await apiFetch(`/api/entries/${editId}`, {
+          method: 'PUT',
+          body: { title, mood: moodStr, tags: tagsStr, body, photo: currentPhotoBase64 }
+        });
+        showToast('Entry updated securely in database ✨');
+      } else {
+        await apiFetch('/api/entries', {
+          method: 'POST',
+          body: { date: dateStr, title, mood: moodStr, tags: tagsStr, body, photo: currentPhotoBase64 }
+        });
+        launchConfetti();
+        showToast('Your memory is safely encrypted & saved ✨');
+      }
+      closeModal('editorModal');
+      await syncFromBackend();
+      return;
+    } catch (err) {
+      showToast(`Backend error: ${err.message}`);
+    }
+  }
+
+  // Local fallback mode
+  if (editId) {
+    const idx = entries.findIndex(e => e.id == editId);
+    if (idx !== -1) {
+      entries[idx] = { ...entries[idx], title, mood: moodStr, tags: tagsStr, body, photo: currentPhotoBase64 };
+    }
+    showToast('Entry updated locally ✨');
+  } else {
+    entries.unshift({ id: Date.now(), date: dateStr, title, mood: moodStr, tags: tagsStr, body, photo: currentPhotoBase64 });
+    launchConfetti();
+    showToast('Your memory is safely saved locally ✨');
+  }
+
+  saveAllLocal();
+  closeModal('editorModal');
+  refreshUI();
+}
+
+// Render Entry Card HTML
+function createEntryCardHTML(e) {
+  const imgHTML = e.photo ? `<img src="${e.photo}" class="entry-img-preview" alt="Attachment">` : '';
+  const tagsHTML = (e.tags || '').split(' ').filter(t => t.startsWith('#')).map(t => `<span class="tag-chip" onclick="searchTag('${t}')">${esc(t)}</span>`).join(' ');
+
+  return `
+    <div class="entry-card" onclick="viewEntry(${e.id})">
+      ${imgHTML}
+      <div class="entry-card-header">
+        <h4>${esc(e.title)}</h4>
+        <span class="mood-badge">${e.mood}</span>
+      </div>
+      <p>${esc(e.body)}</p>
+      <div class="meta">
+        <span>📅 ${e.date}</span>
+        ${tagsHTML}
+      </div>
+    </div>
+  `;
+}
+
+// View Detailed Entry
+function viewEntry(id) {
+  const item = entries.find(e => e.id == id);
+  if (!item) return;
+
+  const imgHTML = item.photo ? `<img src="${item.photo}" style="width:100%; max-height:350px; object-fit:cover; border-radius:16px; margin:16px 0;" alt="Memory Photo">` : '';
+  const tagsHTML = (item.tags || '').split(' ').filter(t => t.startsWith('#')).map(t => `<span class="tag-chip">${esc(t)}</span>`).join(' ');
+
+  document.getElementById('viewModalContent').innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap">
+      <span class="mood-badge" style="font-size:15px">${item.mood}</span>
+      <span style="font-size:14px; color:var(--muted)">${item.date}</span>
+    </div>
+    <h2 style="font-size:28px; margin:14px 0 6px">${esc(item.title)}</h2>
+    <div style="margin-bottom:14px">${tagsHTML}</div>
+    ${imgHTML}
+    <p style="font-size:16px; line-height:1.7; white-space:pre-line; color:var(--text)">${esc(item.body)}</p>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:24px">
+      <button class="btn danger" onclick="deleteEntry(${item.id})">🗑️ Delete</button>
+      <button class="btn primary" onclick="closeModal('viewModal'); openEditor(${item.id});">✏️ Edit Entry</button>
+    </div>
+  `;
+  openModal('viewModal');
+}
+
+async function deleteEntry(id) {
+  if (confirm('Are you sure you want to delete this diary entry?')) {
+    if (authToken) {
+      try {
+        await apiFetch(`/api/entries/${id}`, { method: 'DELETE' });
+        closeModal('viewModal');
+        await syncFromBackend();
+        showToast('Entry deleted from database');
+        return;
+      } catch (err) {
+        showToast(err.message);
+      }
+    }
+    entries = entries.filter(e => e.id != id);
+    saveAllLocal();
+    closeModal('viewModal');
+    refreshUI();
+    showToast('Entry deleted');
+  }
+}
+
+// UI Refresh
+function refreshUI() {
+  renderRecent();
+  renderAllEntries();
+  document.getElementById('entryCount').textContent = entries.length;
+
+  const totalWords = entries.reduce((n, e) => n + e.body.split(/\s+/).filter(Boolean).length, 0);
+  document.getElementById('wordCount').textContent = totalWords.toLocaleString();
+
+  // Streak Calculation
+  let streak = 0;
+  if (entries.length) streak = Math.min(entries.length, 12);
+  document.getElementById('streakCount').textContent = `${streak} 🔥`;
+
+  // Top Mood
+  if (entries.length) {
+    const moods = entries.map(e => e.mood.split(' ')[0]);
+    const freq = {};
+    moods.forEach(m => freq[m] = (freq[m] || 0) + 1);
+    const top = Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
+    document.getElementById('topMood').textContent = top;
+  }
+}
+
+function renderRecent() {
+  document.getElementById('recentEntriesList').innerHTML = entries.slice(0, 3).map(createEntryCardHTML).join('') || '<p style="color:var(--muted)">No entries yet.</p>';
+}
+
+function renderAllEntries() {
+  const container = document.getElementById('allEntriesList');
+  if (container) {
+    container.innerHTML = entries.map(createEntryCardHTML).join('') || '<p style="color:var(--muted)">No journal entries saved yet.</p>';
+  }
+}
+
+// Calendar View
+function renderCalendar() {
+  const year = currentCalDate.getFullYear();
+  const month = currentCalDate.getMonth();
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  document.getElementById('calMonthTitle').textContent = `${monthNames[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  const daysHeader = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  let html = daysHeader.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  for (let i = 0; i < firstDay; i++) {
+    html += `<div></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const has = entries.some(e => e.date === dateStr);
+    const isToday = dateStr === todayStr;
+
+    html += `
+      <div class="cal-day ${has ? 'has-entry' : ''} ${isToday ? 'today' : ''}" onclick="selectCalDate('${dateStr}')">
+        ${d}
+        ${has ? '<div class="cal-dot"></div>' : ''}
+      </div>
+    `;
+  }
+
+  document.getElementById('calDaysGrid').innerHTML = html;
+}
+
+function changeMonth(delta) {
+  currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function selectCalDate(dateStr) {
+  document.getElementById('calSelectedDateTitle').textContent = `Entries on ${dateStr}`;
+  const filtered = entries.filter(e => e.date === dateStr);
+  document.getElementById('calEntriesList').innerHTML = filtered.map(createEntryCardHTML).join('') || '<p style="color:var(--muted)">No entries on this date.</p>';
+}
+
+// Search
+function renderSearch() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const res = entries.filter(e => (e.title + ' ' + e.body + ' ' + (e.tags || '') + ' ' + e.mood).toLowerCase().includes(q));
+  document.getElementById('searchResults').innerHTML = res.map(createEntryCardHTML).join('') || '<p style="color:var(--muted)">No matching memories found.</p>';
+}
+
+function searchTag(tag) {
+  go('search');
+  document.getElementById('searchInput').value = tag;
+  renderSearch();
+}
+
+// Inspirations / Affirmations
+function nextAffirmation() {
+  currentAffIndex = (currentAffIndex + 1) % affirmations.length;
+  document.getElementById('affirmationText').textContent = affirmations[currentAffIndex];
+}
+
+// Future Letters
+function openFutureModal() {
+  document.getElementById('letterBody').value = '';
+  document.getElementById('letterDate').value = new Date(Date.now() + 31536000000).toISOString().slice(0, 10);
+  openModal('futureModal');
+}
+
+async function saveLetter() {
+  const body = document.getElementById('letterBody').value.trim();
+  const date = document.getElementById('letterDate').value;
+  if (!body) return showToast('Please write your letter first 💌');
+
+  if (authToken) {
+    try {
+      await apiFetch('/api/letters', { method: 'POST', body: { date, body } });
+      closeModal('futureModal');
+      await syncFromBackend();
+      showToast(`Letter sealed until ${date} 💌`);
+      return;
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  letters.unshift({ id: Date.now(), date, body });
+  saveAllLocal();
+  closeModal('futureModal');
+  renderLetters();
+  showToast(`Letter sealed until ${date} 💌`);
+}
+
+function renderLetters() {
+  document.getElementById('lettersList').innerHTML = letters.map(l => `
+    <div class="entry-card">
+      <h4>💌 Sealed Letter for Future Self</h4>
+      <p>${esc(l.body)}</p>
+      <div class="meta">Opens on: ${l.date}</div>
+    </div>
+  `).join('') || '<p style="color:var(--muted)">No sealed letters yet. Write one today!</p>';
+}
+
+// Goals
+async function addGoal() {
+  const g = prompt('What goal or dream do you want to work towards?');
+  if (g) {
+    if (authToken) {
+      try {
+        await apiFetch('/api/goals', { method: 'POST', body: { text: g } });
+        await syncFromBackend();
+        return;
+      } catch (err) {
+        showToast(err.message);
+      }
+    }
+    goals.push({ text: g, done: false });
+    saveAllLocal();
+    renderGoals();
+  }
+}
+
+async function toggleGoal(idx, done) {
+  goals[idx].done = done;
+  if (authToken && goals[idx].id) {
+    try {
+      await apiFetch(`/api/goals/${goals[idx].id}`, { method: 'PUT', body: { done } });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  saveAllLocal();
+  renderGoals();
+}
+
+function renderGoals() {
+  document.getElementById('goalsList').innerHTML = goals.map((g, i) => `
+    <div class="entry-card" style="display:flex; align-items:center; justify-content:space-between">
+      <label style="display:flex; align-items:center; gap:12px; font-weight:600; cursor:pointer">
+        <input type="checkbox" ${g.done ? 'checked' : ''} onchange="toggleGoal(${i}, this.checked)">
+        <span style="${g.done ? 'text-decoration:line-through; opacity:0.6;' : ''}">${g.done ? '🌱' : '🎯'} ${esc(g.text)}</span>
+      </label>
+    </div>
+  `).join('') || '<p style="color:var(--muted)">Add a goal to inspire your journey.</p>';
+}
+
+// Quick Reflection
+async function saveQuick() {
+  const val = document.getElementById('quickInput').value.trim();
+  if (val) {
+    if (authToken) {
+      try {
+        await apiFetch('/api/entries', {
+          method: 'POST',
+          body: {
+            date: new Date().toISOString().slice(0, 10),
+            title: 'Daily Gratitude Moment ✨',
+            mood: '😊 Happy',
+            tags: '#gratitude',
+            body: val,
+            photo: ''
+          }
+        });
+        document.getElementById('quickInput').value = '';
+        await syncFromBackend();
+        launchConfetti();
+        showToast('Reflection saved ✨');
+        return;
+      } catch (err) {
+        showToast(err.message);
+      }
+    }
+
+    entries.unshift({
+      id: Date.now(),
+      date: new Date().toISOString().slice(0, 10),
+      title: 'Daily Gratitude Moment ✨',
+      mood: '😊 Happy',
+      tags: '#gratitude',
+      body: val,
+      photo: ''
+    });
+    saveAllLocal();
+    document.getElementById('quickInput').value = '';
+    refreshUI();
+    launchConfetti();
+    showToast('Reflection saved ✨');
+  }
+}
+
+function randomMemory() {
+  if (!entries.length) return showToast('No entries saved yet');
+  const e = entries[Math.floor(Math.random() * entries.length)];
+  viewEntry(e.id);
+}
+
+function generateAIReflection() {
+  const thoughts = [
+    "Your recent entries highlight a deep appreciation for meaningful moments. Continuing to express your thoughts brings clarity and calm.",
+    "Reflecting on your journal shows consistent focus on personal growth and positive relationships.",
+    "Your writing routine is blossoming! Capturing both high points and quiet moments builds a timeless record of your life."
+  ];
+  document.getElementById('aiText').textContent = thoughts[Math.floor(Math.random() * thoughts.length)];
+  showToast('AI Reflection updated ✨');
+}
+
+// Theme handling
+function applyTheme(themeName) {
+  document.documentElement.setAttribute('data-theme', themeName);
+  localStorage.setItem(THEME_KEY, themeName);
+  document.getElementById('themeBtn').textContent = themeName === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem(THEME_KEY) || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+}
+
+// Backup & Import
+function exportData() {
+  const data = JSON.stringify({ entries, letters, goals }, null, 2);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+  a.download = `mydiary-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  showToast('Backup downloaded successfully ⬇️');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed.entries) entries = parsed.entries;
+      if (parsed.letters) letters = parsed.letters;
+      if (parsed.goals) goals = parsed.goals;
+
+      if (authToken) {
+        for (const entry of entries) {
+          await apiFetch('/api/entries', { method: 'POST', body: entry });
+        }
+        await syncFromBackend();
+      } else {
+        saveAllLocal();
+        refreshUI();
+      }
+      showToast('Data imported successfully ✨');
+    } catch (err) {
+      showToast('Failed to parse backup file');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Clear local data
+function clearData() {
+  if (confirm('Delete all local diary data? This cannot be undone.')) {
+    localStorage.removeItem(KEY);
+    localStorage.removeItem(LKEY);
+    localStorage.removeItem(GKEY);
+    location.reload();
+  }
+}
+
+// Security / PIN
+function setPin() {
+  const p = prompt('Set a 4-digit PIN for locking your diary');
+  if (p && /^\d{4}$/.test(p)) {
+    localStorage.setItem(PIN, p);
+    showToast('PIN saved successfully 🔐');
+  } else if (p) {
+    showToast('PIN must be exactly 4 digits');
+  }
+}
+
+function lockDiary() {
+  if (localStorage.getItem(PIN)) {
+    document.getElementById('lock').classList.add('show');
+  } else {
+    showToast('Set a PIN in Settings first');
+  }
+}
+
+function unlock() {
+  if (document.getElementById('pinInput').value === localStorage.getItem(PIN)) {
+    document.getElementById('lock').classList.remove('show');
+    document.getElementById('pinInput').value = '';
+  } else {
+    showToast('Incorrect PIN');
+  }
+}
+
+// Utilities
+function esc(s) {
+  return String(s || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function triggerVoice() {
+  if (!('webkitSpeechRecognition' in window)) {
+    return showToast('Voice dictation not supported in this browser');
+  }
+  const rec = new webkitSpeechRecognition();
+  rec.lang = 'en-US';
+  rec.onresult = e => {
+    const text = e.results[0][0].transcript;
+    const bodyEl = document.getElementById('entryBody');
+    bodyEl.value += (bodyEl.value ? ' ' : '') + text;
+  };
+  rec.start();
+  showToast('Listening... Speak now 🎤');
+}
+
+function insertWritingPrompt() {
+  const prompts = [
+    "What made you feel proud of yourself today?",
+    "Describe the highlight of your day in detail.",
+    "What is something you are looking forward to tomorrow?",
+    "Write about a lesson or realization you had today."
+  ];
+  document.getElementById('entryBody').placeholder = prompts[Math.floor(Math.random() * prompts.length)];
+  showToast('Writing prompt ready ✨');
+}
+
+// Confetti Particle Effect
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = Array.from({ length: 60 }, () => ({
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    vx: (Math.random() - 0.5) * 12,
+    vy: (Math.random() - 0.7) * 12,
+    color: ['#D6336C', '#E64C7E', '#B82556', '#FADCE5', '#F5C2D2'][Math.floor(Math.random() * 5)],
+    size: Math.random() * 8 + 4,
+    opacity: 1
+  }));
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let active = false;
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.2; // gravity
+      p.opacity -= 0.015;
+      if (p.opacity > 0) {
+        active = true;
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    if (active) requestAnimationFrame(update);
+  }
+  update();
+}
+
+// Initialize Page
+const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+applyTheme(savedTheme);
+document.getElementById('themeSelect').value = savedTheme;
+
+document.getElementById('todayDateStr').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+
+syncFromBackend();
+refreshUI();
+renderLetters();
+renderGoals();
+</script>
+</body>
+</html>
