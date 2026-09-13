@@ -156,7 +156,7 @@ app.get('/api/entries', authenticateToken, async (req, res) => {
 // Create new entry
 app.post('/api/entries', authenticateToken, async (req, res) => {
   try {
-    const { date, title, mood, tags, body, photo } = req.body;
+    const { date, title, mood, tags, body, photo, audio } = req.body;
 
     if (!body) {
       return res.status(400).json({ error: 'Entry body text is required.' });
@@ -168,8 +168,8 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
     const encryptedBody = encrypt(body.trim());
 
     const result = await dbRun(
-      `INSERT INTO entries (user_id, date, title, mood, tags, body, photo) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [req.user.id, dateStr, titleStr, moodStr, tags || '', encryptedBody, photo || '']
+      `INSERT INTO entries (user_id, date, title, mood, tags, body, photo, audio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [req.user.id, dateStr, titleStr, moodStr, tags || '', encryptedBody, photo || '', audio || '']
     );
 
     const newEntry = {
@@ -180,7 +180,8 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
       mood: moodStr,
       tags: tags || '',
       body: body.trim(),
-      photo: photo || ''
+      photo: photo || '',
+      audio: audio || ''
     };
 
     res.status(201).json({ message: 'Entry saved securely', entry: newEntry });
@@ -194,7 +195,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
 app.put('/api/entries/:id', authenticateToken, async (req, res) => {
   try {
     const entryId = req.params.id;
-    const { title, mood, tags, body, photo } = req.body;
+    const { title, mood, tags, body, photo, audio } = req.body;
 
     // Verify ownership
     const existing = await dbGet(`SELECT id FROM entries WHERE id = ? AND user_id = ?`, [entryId, req.user.id]);
@@ -205,8 +206,8 @@ app.put('/api/entries/:id', authenticateToken, async (req, res) => {
     const encryptedBody = encrypt(body.trim());
 
     await dbRun(
-      `UPDATE entries SET title = ?, mood = ?, tags = ?, body = ?, photo = ? WHERE id = ? AND user_id = ?`,
-      [title ? title.trim() : 'Untitled Day', mood, tags || '', encryptedBody, photo || '', entryId, req.user.id]
+      `UPDATE entries SET title = ?, mood = ?, tags = ?, body = ?, photo = ?, audio = ? WHERE id = ? AND user_id = ?`,
+      [title ? title.trim() : 'Untitled Day', mood, tags || '', encryptedBody, photo || '', audio || '', entryId, req.user.id]
     );
 
     res.json({ message: 'Entry updated successfully' });
@@ -230,6 +231,33 @@ app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Delete entry error:', err);
     res.status(500).json({ error: 'Failed to delete entry.' });
+  }
+});
+
+/* ==========================================================================
+   GRATITUDE ROUTES
+   ========================================================================== */
+
+app.get('/api/gratitude', authenticateToken, async (req, res) => {
+  try {
+    const rows = await dbAll(`SELECT * FROM gratitude WHERE user_id = ? ORDER BY date DESC`, [req.user.id]);
+    res.json({ gratitude: rows });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch gratitude records.' });
+  }
+});
+
+app.post('/api/gratitude', authenticateToken, async (req, res) => {
+  try {
+    const { date, item1, item2, item3 } = req.body;
+    const dateStr = date || new Date().toISOString().slice(0, 10);
+    const result = await dbRun(
+      `INSERT INTO gratitude (user_id, date, item1, item2, item3) VALUES (?, ?, ?, ?, ?)`,
+      [req.user.id, dateStr, item1 || '', item2 || '', item3 || '']
+    );
+    res.status(201).json({ gratitude: { id: result.lastID, user_id: req.user.id, date: dateStr, item1, item2, item3 } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save gratitude log.' });
   }
 });
 

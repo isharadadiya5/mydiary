@@ -36,10 +36,16 @@ db.serialize(() => {
       tags TEXT,
       body TEXT NOT NULL,
       photo TEXT,
+      audio TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
+
+  // Migrate existing entries table to include audio column if missing
+  db.run(`ALTER TABLE entries ADD COLUMN audio TEXT`, (err) => {
+    // Ignore error if column already exists
+  });
 
   // Future Letters Table
   db.run(`
@@ -60,6 +66,20 @@ db.serialize(() => {
       user_id INTEGER NOT NULL,
       text TEXT NOT NULL,
       done INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `);
+
+  // Daily Gratitude Table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS gratitude (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      item1 TEXT,
+      item2 TEXT,
+      item3 TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
