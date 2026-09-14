@@ -332,7 +332,7 @@ app.get('*', (req, res) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`=================================================`);
-  console.log(`🔒 MyDiary Secure Backend & Database is Running!`);
+  console.log(`🔒 MyDiary MySQL Backend & API is Running!`);
   console.log(`🌐 Server URL: http://localhost:${PORT}`);
   console.log(`=================================================`);
 });
